@@ -1,13 +1,12 @@
-import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { useLocation } from "react-router-dom";
 import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import DashboardContent from "../pages/DashboardContent";
+import Preview from "../pages/Preview";
 import PreviewIcon from "@mui/icons-material/Preview";
 import EditIcon from "@mui/icons-material/Edit";
-import { AppProvider } from "@toolpad/core/AppProvider";
+import { AppProvider } from "@toolpad/core/react-router-dom";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { useDemoRouter } from "@toolpad/core/internal";
 
 const NAVIGATION = [
   {
@@ -15,7 +14,7 @@ const NAVIGATION = [
     title: "Main items",
   },
   {
-    segment: "dashboard",
+    segment: "",
     title: "Dashboard",
     icon: <DashboardIcon />,
   },
@@ -47,39 +46,35 @@ const demoTheme = createTheme({
   },
 });
 
-function DemoPageContent({ pathname }) {
-  return (
-    <Box
-      sx={{
-        py: 4,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
-      }}
-    >
-      <Typography>Dashboard content for {pathname}</Typography>
-    </Box>
-  );
+function DemoPageContent() {
+  const location = useLocation();
+
+  const getContent = (pathname) => {
+    switch (pathname) {
+      case "/":
+        return <DashboardContent />;
+      case "/preview":
+        return <Preview />;
+      case "/edit":
+        return "Start editing your resume";
+      default:
+        return "Page not found";
+    }
+  };
+
+  return <div>{getContent(location.pathname)}</div>;
 }
 
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
-
 function Dashboard() {
-  const router = useDemoRouter("/dashboard");
-
   return (
     // preview-start
     <AppProvider
       navigation={NAVIGATION}
       branding={{ title: "Resume Builder" }}
-      router={router}
       theme={demoTheme}
     >
       <DashboardLayout>
-        <DemoPageContent pathname={router.pathname} />
+        <DemoPageContent />
       </DashboardLayout>
     </AppProvider>
     // preview-end
